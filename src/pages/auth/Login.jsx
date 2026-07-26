@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 
 export default function Login() {
   const [form, setForm] = useState({ username: '', password: '' });
+  const [role, setRole] = useState('staff');
   const [showPwd, setShowPwd] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -76,6 +77,36 @@ export default function Login() {
         <div className="auth-form-wrap">
           <h2>Welcome back</h2>
           <p>Sign in to your MI Logistics account</p>
+
+          {/* Who's signing in? */}
+          <div style={{ display: 'flex', gap: 8, marginTop: 16, marginBottom: 20 }}>
+            <button
+              type="button"
+              onClick={() => setRole('staff')}
+              className="btn"
+              style={{
+                flex: 1, justifyContent: 'center',
+                background: role === 'staff' ? 'var(--brand-primary)' : 'var(--bg-surface-2)',
+                color: role === 'staff' ? '#fff' : 'var(--text-secondary)',
+                border: '1px solid var(--border-color)',
+              }}
+            >
+              Staff / Admin
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/track')}
+              className="btn"
+              style={{
+                flex: 1, justifyContent: 'center',
+                background: 'var(--bg-surface-2)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--border-color)',
+              }}
+            >
+              Customer — Track a Shipment
+            </button>
+          </div>
 
           {errors.general && (
             <div style={{ background: '#FEE2E2', color: '#991B1B', borderRadius: 8, padding: '12px 16px', marginBottom: 20, fontSize: 14, display: 'flex', alignItems: 'center', gap: 8 }}>

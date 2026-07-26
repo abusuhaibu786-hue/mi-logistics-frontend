@@ -8,6 +8,7 @@ import { ProtectedRoute, PublicRoute } from './routes/ProtectedRoute';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import ForgotPassword from './pages/auth/ForgotPassword';
+import PublicTrack from './pages/track/PublicTrack';
 
 // App Pages
 import Dashboard from './pages/dashboard/Dashboard';
@@ -41,6 +42,9 @@ export default function App() {
             }}
           />
           <Routes>
+            {/* Guest — no login required, accessible regardless of auth state */}
+            <Route path="/track" element={<PublicTrack />} />
+
             {/* Public Routes */}
             <Route element={<PublicRoute />}>
               <Route path="/login" element={<Login />} />
