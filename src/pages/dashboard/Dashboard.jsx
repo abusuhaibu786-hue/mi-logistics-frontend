@@ -193,7 +193,7 @@ export default function Dashboard() {
         <div className="card-header">
           <span className="card-title"><FiMapPin size={16} /> Our Office Location</span>
           <a
-            href="https://www.google.com/maps/search/?api=1&query=Virudhunagar,Tamil+Nadu"
+            href="google.com/maps/place/MI+logistics/data=!4m2!3m1!1s0x0:0x42402f2aea2a1e1d?sa=X&ved=1t:2428&ictx=111"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-secondary btn-sm flex items-center gap-2"
@@ -208,7 +208,7 @@ export default function Dashboard() {
           <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--border-color)' }}>
             <iframe
               title="MI Logistics Office Location - Virudhunagar"
-              src="https://www.google.com/maps?q=Virudhunagar,Tamil+Nadu,India&output=embed"
+              src="google.com/maps/place/MI+logistics/data=!4m2!3m1!1s0x0:0x42402f2aea2a1e1d?sa=X&ved=1t:2428&ictx=111"
               width="100%"
               height="320"
               style={{ border: 0, display: 'block' }}
