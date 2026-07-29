@@ -100,20 +100,22 @@ export default function Shipments() {
     return e;
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     const e = validateForm();
     if (Object.keys(e).length) { setFormErrors(e); return; }
-    addShipment(form);
+    const ok = await addShipment(form);
+    if (!ok) return;
     toast.success('Shipment created successfully!');
     setShowAdd(false);
     setForm(emptyForm);
     setFormErrors({});
   };
 
-  const handleEdit = () => {
+  const handleEdit = async () => {
     const e = validateForm();
     if (Object.keys(e).length) { setFormErrors(e); return; }
-    updateShipment(showEdit.id, form);
+    const ok = await updateShipment(showEdit.id, form);
+    if (!ok) return;
     toast.success('Shipment updated!');
     setShowEdit(null);
     setForm(emptyForm);
