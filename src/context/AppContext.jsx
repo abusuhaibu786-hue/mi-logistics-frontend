@@ -99,8 +99,9 @@ export const AppProvider = ({ children }) => {
   // `customerCode` / `staffCode`. Resolved here so the page component
   // doesn't need to know about the backend's id scheme.
   const resolveShipmentPayload = (data) => {
-    const customer = customers.find(c => c.name === data.customer);
-    const staffMember = staff.find(s => s.name === data.staff);
+    const norm = (s) => (s || '').trim().toLowerCase();
+    const customer = customers.find(c => norm(c.name) === norm(data.customer));
+    const staffMember = staff.find(s => norm(s.name) === norm(data.staff));
     return {
       customerCode: customer?.id,
       staffCode: staffMember?.id,
@@ -121,12 +122,14 @@ export const AppProvider = ({ children }) => {
       const payload = resolveShipmentPayload(data);
       if (!payload.customerCode) {
         toast.error(`No customer named "${data.customer}" found. Add them under Customers first.`);
-        return;
+        return false;
       }
       const { data: created } = await shipmentService.create(payload);
       setShipments(prev => [normalizeShipment(created), ...prev]);
+      return true;
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Could not create shipment.');
+      return false;
     }
   };
 
@@ -135,11 +138,18 @@ export const AppProvider = ({ children }) => {
     setShipments(prev => prev.map(s => s.id === id ? { ...s, ...data } : s));
     try {
       const payload = resolveShipmentPayload({ ...shipments.find(s => s.id === id), ...data });
+      if (!payload.customerCode) {
+        setShipments(previous);
+        toast.error(`No customer named "${data.customer}" found. Add them under Customers first.`);
+        return false;
+      }
       const { data: updated } = await shipmentService.update(id, payload);
       setShipments(prev => prev.map(s => s.id === id ? normalizeShipment(updated) : s));
+      return true;
     } catch (err) {
       setShipments(previous);
       toast.error('Could not update shipment.');
+      return false;
     }
   };
 
