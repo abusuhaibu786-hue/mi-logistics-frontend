@@ -44,6 +44,7 @@ export const AppProvider = ({ children }) => {
   const [staff, setStaff] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [stats, setStats] = useState({ total: 0, delivered: 0, pending: 0, inTransit: 0, revenue: 0 });
+  const [monthlyStats, setMonthlyStats] = useState({ labels: [], revenue: [], shipments: [], delivered: [] });
   const [dataLoading, setDataLoading] = useState(false);
 
   useEffect(() => {
@@ -56,12 +57,13 @@ export const AppProvider = ({ children }) => {
   const refreshAll = useCallback(async () => {
     setDataLoading(true);
     try {
-      const [shipmentsRes, customersRes, staffRes, notifsRes, statsRes] = await Promise.all([
+      const [shipmentsRes, customersRes, staffRes, notifsRes, statsRes, monthlyRes] = await Promise.all([
         shipmentService.getAll({ page_size: 100 }),
         customerService.getAll({ page_size: 100 }),
         staffService.getAll({ page_size: 100 }),
         notificationService.getAll(),
         dashboardService.getStats(),
+        dashboardService.getMonthly(),
       ]);
       setShipments(unwrapList(shipmentsRes.data).map(normalizeShipment));
       setCustomers(unwrapList(customersRes.data).map(normalizeCustomer));
@@ -74,6 +76,7 @@ export const AppProvider = ({ children }) => {
         inTransit: statsRes.data.inTransitShipments,
         revenue: Number(statsRes.data.totalRevenue) || 0,
       });
+      setMonthlyStats(monthlyRes.data);
     } catch (err) {
       toast.error('Could not load data from the server.');
     } finally {
@@ -90,6 +93,7 @@ export const AppProvider = ({ children }) => {
     } else {
       setShipments([]); setCustomers([]); setStaff([]); setNotifications([]);
       setStats({ total: 0, delivered: 0, pending: 0, inTransit: 0, revenue: 0 });
+      setMonthlyStats({ labels: [], revenue: [], shipments: [], delivered: [] });
     }
   }, [isAuth, refreshAll]);
 
@@ -98,11 +102,14 @@ export const AppProvider = ({ children }) => {
   // *names* (matching the original sample-data shape), but the API needs
   // `customerCode` / `staffCode`. Resolved here so the page component
   // doesn't need to know about the backend's id scheme.
-  const resolveShipmentPayload = (data) => {
+  // `customerCodeOverride` lets addShipment supply the code of a customer
+  // it just auto-created (before that customer exists in `customers`
+  // state yet), while update/edit keeps resolving by name as before.
+  const resolveShipmentPayload = (data, customerCodeOverride) => {
     const customer = customers.find(c => c.name === data.customer);
     const staffMember = staff.find(s => s.name === data.staff);
     return {
-      customerCode: customer?.id,
+      customerCode: customerCodeOverride || customer?.id,
       staffCode: staffMember?.id,
       destination: data.destination,
       origin: data.origin,
@@ -116,13 +123,31 @@ export const AppProvider = ({ children }) => {
     };
   };
 
+  // If the typed customer name doesn't match an existing customer, a new
+  // Customer record is created on the fly (name + phone from the form;
+  // city/state fall back to defaults since the shipment form doesn't
+  // collect them) so the shipment can still be booked without forcing
+  // the user to go add the customer separately first.
   const addShipment = async (data) => {
     try {
-      const payload = resolveShipmentPayload(data);
-      if (!payload.customerCode) {
-        toast.error(`No customer named "${data.customer}" found. Add them under Customers first.`);
-        return;
+      let customer = customers.find(c => c.name === data.customer);
+
+      if (!customer) {
+        try {
+          const { data: newCustomer } = await customerService.create({
+            name: data.customer,
+            phone: data.phone || '',
+            city: 'N/A',
+          });
+          customer = normalizeCustomer(newCustomer);
+          setCustomers(prev => [customer, ...prev]);
+        } catch (err) {
+          toast.error(err.response?.data?.email?.[0] || err.response?.data?.name?.[0] || `Could not auto-create customer "${data.customer}".`);
+          return;
+        }
       }
+
+      const payload = resolveShipmentPayload(data, customer.id);
       const { data: created } = await shipmentService.create(payload);
       setShipments(prev => [normalizeShipment(created), ...prev]);
     } catch (err) {
@@ -241,7 +266,7 @@ export const AppProvider = ({ children }) => {
       customers, addCustomer, updateCustomer, deleteCustomer,
       staff, addStaff, updateStaff, deleteStaff,
       notifications, markNotifRead, unreadCount,
-      stats, dataLoading, refreshAll,
+      stats, monthlyStats, dataLoading, refreshAll,
     }}>
       {children}
     </AppContext.Provider>

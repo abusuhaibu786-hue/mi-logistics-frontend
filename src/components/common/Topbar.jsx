@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { FiMenu, FiSearch, FiBell, FiSun, FiMoon, FiX } from 'react-icons/fi';
 import { useApp } from '../../context/AppContext';
-import { NOTIFICATIONS } from '../../data/sampleData';
 
 const BREADCRUMBS = {
   '/dashboard': ['Dashboard'],

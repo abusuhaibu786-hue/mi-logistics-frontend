@@ -7,6 +7,48 @@ import toast from 'react-hot-toast';
 
 const emptyForm = { name: '', email: '', phone: '', city: '', state: 'Tamil Nadu', status: 'active' };
 
+function CustomerForm({ form, setF, formErrors }) {
+  return (
+    <div>
+      <div className="grid grid-2">
+        <div className="form-group">
+          <label className="form-label">Full Name <span className="required">*</span></label>
+          <input className="form-control" placeholder="e.g. Arjun Sharma" value={form.name} onChange={e => setF('name', e.target.value)} style={{ borderColor: formErrors.name ? 'var(--brand-danger)' : undefined }} />
+          {formErrors.name && <p className="form-error">{formErrors.name}</p>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Phone <span className="required">*</span></label>
+          <input className="form-control" placeholder="+91 9876543210" value={form.phone} onChange={e => setF('phone', e.target.value)} style={{ borderColor: formErrors.phone ? 'var(--brand-danger)' : undefined }} />
+          {formErrors.phone && <p className="form-error">{formErrors.phone}</p>}
+        </div>
+        <div className="form-group col-span-2">
+          <label className="form-label">Email Address <span className="required">*</span></label>
+          <input className="form-control" type="email" placeholder="customer@example.com" value={form.email} onChange={e => setF('email', e.target.value)} style={{ borderColor: formErrors.email ? 'var(--brand-danger)' : undefined }} />
+          {formErrors.email && <p className="form-error">{formErrors.email}</p>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">City <span className="required">*</span></label>
+          <input className="form-control" placeholder="Chennai" value={form.city} onChange={e => setF('city', e.target.value)} style={{ borderColor: formErrors.city ? 'var(--brand-danger)' : undefined }} />
+          {formErrors.city && <p className="form-error">{formErrors.city}</p>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">State</label>
+          <select className="form-control filter-select" value={form.state} onChange={e => setF('state', e.target.value)}>
+            {['Tamil Nadu','Karnataka','Maharashtra','Delhi','Telangana','Kerala','Andhra Pradesh'].map(s => <option key={s}>{s}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Status</label>
+          <select className="form-control filter-select" value={form.status} onChange={e => setF('status', e.target.value)}>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Customers() {
   const { customers, addCustomer, updateCustomer, deleteCustomer, shipments } = useApp();
   const [search, setSearch] = useState('');
@@ -60,46 +102,6 @@ export default function Customers() {
 
   const openEdit = (c) => { setShowEdit(c); setForm({ ...c }); setFormErrors({}); };
   const setF = (k, v) => { setForm(f => ({ ...f, [k]: v })); setFormErrors(e => ({ ...e, [k]: '' })); };
-
-  const CustomerForm = () => (
-    <div>
-      <div className="grid grid-2">
-        <div className="form-group">
-          <label className="form-label">Full Name <span className="required">*</span></label>
-          <input className="form-control" placeholder="e.g. Arjun Sharma" value={form.name} onChange={e => setF('name', e.target.value)} style={{ borderColor: formErrors.name ? 'var(--brand-danger)' : undefined }} />
-          {formErrors.name && <p className="form-error">{formErrors.name}</p>}
-        </div>
-        <div className="form-group">
-          <label className="form-label">Phone <span className="required">*</span></label>
-          <input className="form-control" placeholder="+91 9876543210" value={form.phone} onChange={e => setF('phone', e.target.value)} style={{ borderColor: formErrors.phone ? 'var(--brand-danger)' : undefined }} />
-          {formErrors.phone && <p className="form-error">{formErrors.phone}</p>}
-        </div>
-        <div className="form-group col-span-2">
-          <label className="form-label">Email Address <span className="required">*</span></label>
-          <input className="form-control" type="email" placeholder="customer@example.com" value={form.email} onChange={e => setF('email', e.target.value)} style={{ borderColor: formErrors.email ? 'var(--brand-danger)' : undefined }} />
-          {formErrors.email && <p className="form-error">{formErrors.email}</p>}
-        </div>
-        <div className="form-group">
-          <label className="form-label">City <span className="required">*</span></label>
-          <input className="form-control" placeholder="Chennai" value={form.city} onChange={e => setF('city', e.target.value)} style={{ borderColor: formErrors.city ? 'var(--brand-danger)' : undefined }} />
-          {formErrors.city && <p className="form-error">{formErrors.city}</p>}
-        </div>
-        <div className="form-group">
-          <label className="form-label">State</label>
-          <select className="form-control filter-select" value={form.state} onChange={e => setF('state', e.target.value)}>
-            {['Tamil Nadu','Karnataka','Maharashtra','Delhi','Telangana','Kerala','Andhra Pradesh'].map(s => <option key={s}>{s}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label className="form-label">Status</label>
-          <select className="form-control filter-select" value={form.status} onChange={e => setF('status', e.target.value)}>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div>
@@ -215,13 +217,13 @@ export default function Customers() {
       {/* Add Modal */}
       <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add New Customer" size="modal-lg"
         footer={<><button className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button><button className="btn btn-primary" onClick={handleAdd}><FiPlus size={14} /> Add Customer</button></>}>
-        <CustomerForm />
+        <CustomerForm form={form} setF={setF} formErrors={formErrors} />
       </Modal>
 
       {/* Edit Modal */}
       <Modal open={!!showEdit} onClose={() => setShowEdit(null)} title="Edit Customer" size="modal-lg"
         footer={<><button className="btn btn-secondary" onClick={() => setShowEdit(null)}>Cancel</button><button className="btn btn-primary" onClick={handleEdit}>Save Changes</button></>}>
-        <CustomerForm />
+        <CustomerForm form={form} setF={setF} formErrors={formErrors} />
       </Modal>
 
       {/* View Modal */}

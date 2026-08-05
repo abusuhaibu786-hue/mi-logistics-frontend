@@ -5,7 +5,6 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { useApp } from '../../context/AppContext';
 import { TabList } from '../../components/common/UIComponents';
 import { formatCurrency } from '../../utils/helpers';
-import { MONTHLY_DATA } from '../../data/sampleData';
 import toast from 'react-hot-toast';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
@@ -17,17 +16,17 @@ const chartBase = {
 };
 
 export default function Reports() {
-  const { shipments, customers } = useApp();
+  const { shipments, customers, monthlyStats } = useApp();
   const [tab, setTab] = useState('Monthly');
   const [range, setRange] = useState('Last 7 Months');
 
   const handleExport = (type) => toast.success(`${type} export started!`);
 
   const revenueData = {
-    labels: MONTHLY_DATA.labels,
+    labels: monthlyStats.labels,
     datasets: [{
       label: 'Revenue (₹)',
-      data: MONTHLY_DATA.revenue,
+      data: monthlyStats.revenue,
       borderColor: '#F97316',
       backgroundColor: 'rgba(249,115,22,0.08)',
       fill: true, tension: 0.4,
@@ -36,10 +35,10 @@ export default function Reports() {
   };
 
   const shipmentBarData = {
-    labels: MONTHLY_DATA.labels,
+    labels: monthlyStats.labels,
     datasets: [
-      { label: 'Total', data: MONTHLY_DATA.shipments, backgroundColor: 'rgba(59,130,246,0.75)', borderRadius: 5 },
-      { label: 'Delivered', data: MONTHLY_DATA.delivered, backgroundColor: 'rgba(16,185,129,0.75)', borderRadius: 5 },
+      { label: 'Total', data: monthlyStats.shipments, backgroundColor: 'rgba(59,130,246,0.75)', borderRadius: 5 },
+      { label: 'Delivered', data: monthlyStats.delivered, backgroundColor: 'rgba(16,185,129,0.75)', borderRadius: 5 },
     ],
   };
 
@@ -58,10 +57,10 @@ export default function Reports() {
   };
 
   const deliveryRateData = {
-    labels: MONTHLY_DATA.labels,
+    labels: monthlyStats.labels,
     datasets: [{
       label: 'Delivery Rate %',
-      data: MONTHLY_DATA.delivered.map((d, i) => Math.round((d / MONTHLY_DATA.shipments[i]) * 100)),
+      data: monthlyStats.delivered.map((d, i) => Math.round((d / monthlyStats.shipments[i]) * 100)),
       borderColor: '#10B981',
       backgroundColor: 'rgba(16,185,129,0.08)',
       fill: true, tension: 0.4,
@@ -70,9 +69,9 @@ export default function Reports() {
   };
 
   const summaryStats = [
-    { label: 'Total Revenue', val: formatCurrency(MONTHLY_DATA.revenue.reduce((a, b) => a + b, 0)), icon: FiDollarSign, color: 'var(--brand-accent)', bg: 'rgba(249,115,22,0.1)' },
-    { label: 'Total Shipments', val: MONTHLY_DATA.shipments.reduce((a, b) => a + b, 0).toLocaleString(), icon: FiPackage, color: 'var(--brand-info)', bg: 'rgba(59,130,246,0.1)' },
-    { label: 'Avg. Delivery Rate', val: `${Math.round(MONTHLY_DATA.delivered.reduce((a, b) => a + b, 0) / MONTHLY_DATA.shipments.reduce((a, b) => a + b, 0) * 100)}%`, icon: FiTrendingUp, color: 'var(--brand-success)', bg: 'rgba(16,185,129,0.1)' },
+    { label: 'Total Revenue', val: formatCurrency(monthlyStats.revenue.reduce((a, b) => a + b, 0)), icon: FiDollarSign, color: 'var(--brand-accent)', bg: 'rgba(249,115,22,0.1)' },
+    { label: 'Total Shipments', val: monthlyStats.shipments.reduce((a, b) => a + b, 0).toLocaleString(), icon: FiPackage, color: 'var(--brand-info)', bg: 'rgba(59,130,246,0.1)' },
+    { label: 'Avg. Delivery Rate', val: `${Math.round(monthlyStats.delivered.reduce((a, b) => a + b, 0) / monthlyStats.shipments.reduce((a, b) => a + b, 0) * 100)}%`, icon: FiTrendingUp, color: 'var(--brand-success)', bg: 'rgba(16,185,129,0.1)' },
     { label: 'Active Customers', val: customers.filter(c => c.status === 'active').length, icon: FiBarChart2, color: 'var(--brand-warning)', bg: 'rgba(245,158,11,0.1)' },
   ];
 
@@ -156,15 +155,15 @@ export default function Reports() {
                   <tr><th>Month</th><th>Total Shipments</th><th>Delivered</th><th>Pending/Transit</th><th>Revenue</th><th>Delivery Rate</th></tr>
                 </thead>
                 <tbody>
-                  {MONTHLY_DATA.labels.map((month, i) => {
-                    const rate = Math.round((MONTHLY_DATA.delivered[i] / MONTHLY_DATA.shipments[i]) * 100);
+                  {monthlyStats.labels.map((month, i) => {
+                    const rate = Math.round((monthlyStats.delivered[i] / monthlyStats.shipments[i]) * 100);
                     return (
                       <tr key={month}>
-                        <td><span style={{ fontWeight: 600 }}>{month} 2024</span></td>
-                        <td>{MONTHLY_DATA.shipments[i]}</td>
-                        <td><span style={{ color: 'var(--brand-success)', fontWeight: 600 }}>{MONTHLY_DATA.delivered[i]}</span></td>
-                        <td>{MONTHLY_DATA.shipments[i] - MONTHLY_DATA.delivered[i]}</td>
-                        <td><span style={{ fontWeight: 600 }}>{formatCurrency(MONTHLY_DATA.revenue[i])}</span></td>
+                        <td><span style={{ fontWeight: 600 }}>{month}</span></td>
+                        <td>{monthlyStats.shipments[i]}</td>
+                        <td><span style={{ color: 'var(--brand-success)', fontWeight: 600 }}>{monthlyStats.delivered[i]}</span></td>
+                        <td>{monthlyStats.shipments[i] - monthlyStats.delivered[i]}</td>
+                        <td><span style={{ fontWeight: 600 }}>{formatCurrency(monthlyStats.revenue[i])}</span></td>
                         <td>
                           <div className="flex items-center gap-2">
                             <div style={{ flex: 1, height: 6, background: 'var(--bg-surface-2)', borderRadius: 3 }}>
@@ -202,14 +201,14 @@ export default function Reports() {
               <table className="data-table">
                 <thead><tr><th>Month</th><th>Revenue</th><th>Shipments</th><th>Avg per Shipment</th><th>Growth</th></tr></thead>
                 <tbody>
-                  {MONTHLY_DATA.labels.map((month, i) => {
-                    const growth = i > 0 ? Math.round(((MONTHLY_DATA.revenue[i] - MONTHLY_DATA.revenue[i-1]) / MONTHLY_DATA.revenue[i-1]) * 100) : 0;
+                  {monthlyStats.labels.map((month, i) => {
+                    const growth = i > 0 ? Math.round(((monthlyStats.revenue[i] - monthlyStats.revenue[i-1]) / monthlyStats.revenue[i-1]) * 100) : 0;
                     return (
                       <tr key={month}>
-                        <td><span style={{ fontWeight: 600 }}>{month} 2024</span></td>
-                        <td><span style={{ fontWeight: 700, color: 'var(--brand-accent)' }}>{formatCurrency(MONTHLY_DATA.revenue[i])}</span></td>
-                        <td>{MONTHLY_DATA.shipments[i]}</td>
-                        <td>{formatCurrency(Math.round(MONTHLY_DATA.revenue[i] / MONTHLY_DATA.shipments[i]))}</td>
+                        <td><span style={{ fontWeight: 600 }}>{month}</span></td>
+                        <td><span style={{ fontWeight: 700, color: 'var(--brand-accent)' }}>{formatCurrency(monthlyStats.revenue[i])}</span></td>
+                        <td>{monthlyStats.shipments[i]}</td>
+                        <td>{formatCurrency(Math.round(monthlyStats.revenue[i] / monthlyStats.shipments[i]))}</td>
                         <td>
                           {i === 0 ? <span style={{ color: 'var(--text-muted)' }}>—</span> : (
                             <span style={{ color: growth >= 0 ? 'var(--brand-success)' : 'var(--brand-danger)', fontWeight: 600 }}>

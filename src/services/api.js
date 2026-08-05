@@ -129,6 +129,7 @@ export const notificationService = {
 
 export const dashboardService = {
   getStats: () => api.get('/dashboard/stats/'),
+  getMonthly: (months = 7) => api.get('/dashboard/monthly/', { params: { months } }),
 };
 
 export default api;

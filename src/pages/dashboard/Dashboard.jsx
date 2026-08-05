@@ -7,7 +7,6 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 import { useApp } from '../../context/AppContext';
 import { StatCard, StatusBadge, SkeletonCard } from '../../components/common/UIComponents';
 import { formatCurrency, formatDate } from '../../utils/helpers';
-import { MONTHLY_DATA } from '../../data/sampleData';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
@@ -18,7 +17,7 @@ const chartOptions = {
 };
 
 export default function Dashboard() {
-  const { stats, shipments } = useApp();
+  const { stats, shipments, monthlyStats } = useApp();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => { const t = setTimeout(() => setLoading(false), 800); return () => clearTimeout(t); }, []);
@@ -26,10 +25,10 @@ export default function Dashboard() {
   const recentShipments = shipments.slice(0, 6);
 
   const revenueData = {
-    labels: MONTHLY_DATA.labels,
+    labels: monthlyStats.labels,
     datasets: [{
       label: 'Revenue',
-      data: MONTHLY_DATA.revenue,
+      data: monthlyStats.revenue,
       borderColor: '#F97316',
       backgroundColor: 'rgba(249,115,22,0.1)',
       fill: true,
@@ -40,10 +39,10 @@ export default function Dashboard() {
   };
 
   const shipmentData = {
-    labels: MONTHLY_DATA.labels,
+    labels: monthlyStats.labels,
     datasets: [
-      { label: 'Total', data: MONTHLY_DATA.shipments, backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 4 },
-      { label: 'Delivered', data: MONTHLY_DATA.delivered, backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 4 },
+      { label: 'Total', data: monthlyStats.shipments, backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 4 },
+      { label: 'Delivered', data: monthlyStats.delivered, backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 4 },
     ],
   };
 

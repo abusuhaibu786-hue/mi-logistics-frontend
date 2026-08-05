@@ -10,62 +10,8 @@ const PRIORITIES = ['standard', 'express', 'economy'];
 
 const emptyForm = { customer: '', phone: '', origin: 'Virudhunagar', destination: '', weight: '', amount: '', status: 'pending', priority: 'standard', staff: '', address: '' };
 
-export default function Shipments() {
-  const { shipments, addShipment, updateShipment, deleteShipment, customers, staff: staffList } = useApp();
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
-  const [page, setPage] = useState(1);
-  const [showAdd, setShowAdd] = useState(false);
-  const [showEdit, setShowEdit] = useState(null);
-  const [showView, setShowView] = useState(null);
-  const [showDelete, setShowDelete] = useState(null);
-  const [form, setForm] = useState(emptyForm);
-  const [formErrors, setFormErrors] = useState({});
-  const PER_PAGE = 8;
-
-  const filtered = useMemo(() => {
-    return shipments.filter(s => {
-      const matchSearch = !search || s.trackingNumber.toLowerCase().includes(search.toLowerCase()) || s.customer.toLowerCase().includes(search.toLowerCase()) || s.destination.toLowerCase().includes(search.toLowerCase());
-      const matchStatus = statusFilter === 'All' || s.status === statusFilter;
-      return matchSearch && matchStatus;
-    });
-  }, [shipments, search, statusFilter]);
-
-  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-
-  const validateForm = () => {
-    const e = {};
-    if (!form.customer) e.customer = 'Customer name is required';
-    if (!form.destination) e.destination = 'Destination is required';
-    if (!form.weight) e.weight = 'Weight is required';
-    if (!form.amount) e.amount = 'Amount is required';
-    return e;
-  };
-
-  const handleAdd = () => {
-    const e = validateForm();
-    if (Object.keys(e).length) { setFormErrors(e); return; }
-    addShipment(form);
-    toast.success('Shipment created successfully!');
-    setShowAdd(false);
-    setForm(emptyForm);
-    setFormErrors({});
-  };
-
-  const handleEdit = () => {
-    const e = validateForm();
-    if (Object.keys(e).length) { setFormErrors(e); return; }
-    updateShipment(showEdit.id, form);
-    toast.success('Shipment updated!');
-    setShowEdit(null);
-    setForm(emptyForm);
-    setFormErrors({});
-  };
-
-  const openEdit = (s) => { setShowEdit(s); setForm({ ...s }); setFormErrors({}); };
-  const setF = (k, v) => { setForm(f => ({ ...f, [k]: v })); setFormErrors(e => ({ ...e, [k]: '' })); };
-
-  const ShipmentForm = ({ onSubmit, submitLabel }) => (
+function ShipmentForm({ form, setF, formErrors, staffList }) {
+  return (
     <div>
       <div className="grid grid-2">
         <div className="form-group">
@@ -122,6 +68,62 @@ export default function Shipments() {
       </div>
     </div>
   );
+}
+
+export default function Shipments() {
+  const { shipments, addShipment, updateShipment, deleteShipment, customers, staff: staffList } = useApp();
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [page, setPage] = useState(1);
+  const [showAdd, setShowAdd] = useState(false);
+  const [showEdit, setShowEdit] = useState(null);
+  const [showView, setShowView] = useState(null);
+  const [showDelete, setShowDelete] = useState(null);
+  const [form, setForm] = useState(emptyForm);
+  const [formErrors, setFormErrors] = useState({});
+  const PER_PAGE = 8;
+
+  const filtered = useMemo(() => {
+    return shipments.filter(s => {
+      const matchSearch = !search || s.trackingNumber.toLowerCase().includes(search.toLowerCase()) || s.customer.toLowerCase().includes(search.toLowerCase()) || s.destination.toLowerCase().includes(search.toLowerCase());
+      const matchStatus = statusFilter === 'All' || s.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [shipments, search, statusFilter]);
+
+  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+  const validateForm = () => {
+    const e = {};
+    if (!form.customer) e.customer = 'Customer name is required';
+    if (!form.destination) e.destination = 'Destination is required';
+    if (!form.weight) e.weight = 'Weight is required';
+    if (!form.amount) e.amount = 'Amount is required';
+    return e;
+  };
+
+  const handleAdd = () => {
+    const e = validateForm();
+    if (Object.keys(e).length) { setFormErrors(e); return; }
+    addShipment(form);
+    toast.success('Shipment created successfully!');
+    setShowAdd(false);
+    setForm(emptyForm);
+    setFormErrors({});
+  };
+
+  const handleEdit = () => {
+    const e = validateForm();
+    if (Object.keys(e).length) { setFormErrors(e); return; }
+    updateShipment(showEdit.id, form);
+    toast.success('Shipment updated!');
+    setShowEdit(null);
+    setForm(emptyForm);
+    setFormErrors({});
+  };
+
+  const openEdit = (s) => { setShowEdit(s); setForm({ ...s }); setFormErrors({}); };
+  const setF = (k, v) => { setForm(f => ({ ...f, [k]: v })); setFormErrors(e => ({ ...e, [k]: '' })); };
 
   return (
     <div>
@@ -208,13 +210,13 @@ export default function Shipments() {
       {/* Add Modal */}
       <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add New Shipment" size="modal-lg"
         footer={<><button className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button><button className="btn btn-primary" onClick={handleAdd}><FiPackage size={14} /> Create Shipment</button></>}>
-        <ShipmentForm onSubmit={handleAdd} submitLabel="Create" />
+        <ShipmentForm form={form} setF={setF} formErrors={formErrors} staffList={staffList} />
       </Modal>
 
       {/* Edit Modal */}
       <Modal open={!!showEdit} onClose={() => setShowEdit(null)} title="Edit Shipment" size="modal-lg"
         footer={<><button className="btn btn-secondary" onClick={() => setShowEdit(null)}>Cancel</button><button className="btn btn-primary" onClick={handleEdit}>Save Changes</button></>}>
-        <ShipmentForm onSubmit={handleEdit} submitLabel="Update" />
+        <ShipmentForm form={form} setF={setF} formErrors={formErrors} staffList={staffList} />
       </Modal>
 
       {/* View Modal */}

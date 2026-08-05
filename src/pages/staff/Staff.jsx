@@ -9,6 +9,59 @@ const ROLES = ['Delivery Manager', 'Senior Driver', 'Driver', 'Warehouse Staff',
 const DEPTS = ['Operations', 'Delivery', 'Warehouse', 'Support', 'Finance'];
 const emptyForm = { name: '', email: '', phone: '', role: 'Driver', department: 'Delivery', salary: '', address: '', status: 'active' };
 
+function StaffForm({ form, setF, formErrors }) {
+  return (
+    <div>
+      <div className="grid grid-2">
+        <div className="form-group">
+          <label className="form-label">Full Name <span className="required">*</span></label>
+          <input className="form-control" placeholder="e.g. Ramesh Kumar" value={form.name} onChange={e => setF('name', e.target.value)} style={{ borderColor: formErrors.name ? 'var(--brand-danger)' : undefined }} />
+          {formErrors.name && <p className="form-error">{formErrors.name}</p>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Phone <span className="required">*</span></label>
+          <input className="form-control" placeholder="+91 9876543210" value={form.phone} onChange={e => setF('phone', e.target.value)} style={{ borderColor: formErrors.phone ? 'var(--brand-danger)' : undefined }} />
+          {formErrors.phone && <p className="form-error">{formErrors.phone}</p>}
+        </div>
+        <div className="form-group col-span-2">
+          <label className="form-label">Email <span className="required">*</span></label>
+          <input className="form-control" type="email" placeholder="staff@milogistics.com" value={form.email} onChange={e => setF('email', e.target.value)} style={{ borderColor: formErrors.email ? 'var(--brand-danger)' : undefined }} />
+          {formErrors.email && <p className="form-error">{formErrors.email}</p>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Role</label>
+          <select className="form-control filter-select" value={form.role} onChange={e => setF('role', e.target.value)}>
+            {ROLES.map(r => <option key={r}>{r}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Department</label>
+          <select className="form-control filter-select" value={form.department} onChange={e => setF('department', e.target.value)}>
+            {DEPTS.map(d => <option key={d}>{d}</option>)}
+          </select>
+        </div>
+        <div className="form-group">
+          <label className="form-label">Monthly Salary (₹) <span className="required">*</span></label>
+          <input className="form-control" type="number" placeholder="25000" value={form.salary} onChange={e => setF('salary', e.target.value)} style={{ borderColor: formErrors.salary ? 'var(--brand-danger)' : undefined }} />
+          {formErrors.salary && <p className="form-error">{formErrors.salary}</p>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Status</label>
+          <select className="form-control filter-select" value={form.status} onChange={e => setF('status', e.target.value)}>
+            <option value="active">Active</option>
+            <option value="on-leave">On Leave</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div className="form-group col-span-2">
+          <label className="form-label">Address</label>
+          <input className="form-control" placeholder="Virudhunagar" value={form.address} onChange={e => setF('address', e.target.value)} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Staff() {
   const { staff, addStaff, updateStaff, deleteStaff } = useApp();
   const [search, setSearch] = useState('');
@@ -71,57 +124,6 @@ export default function Staff() {
         <FiStar key={i} size={12} fill={i <= Math.round(rating) ? '#F59E0B' : 'none'} color={i <= Math.round(rating) ? '#F59E0B' : 'var(--border-color)'} />
       ))}
       <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 2 }}>{rating}</span>
-    </div>
-  );
-
-  const StaffForm = () => (
-    <div>
-      <div className="grid grid-2">
-        <div className="form-group">
-          <label className="form-label">Full Name <span className="required">*</span></label>
-          <input className="form-control" placeholder="e.g. Ramesh Kumar" value={form.name} onChange={e => setF('name', e.target.value)} style={{ borderColor: formErrors.name ? 'var(--brand-danger)' : undefined }} />
-          {formErrors.name && <p className="form-error">{formErrors.name}</p>}
-        </div>
-        <div className="form-group">
-          <label className="form-label">Phone <span className="required">*</span></label>
-          <input className="form-control" placeholder="+91 9876543210" value={form.phone} onChange={e => setF('phone', e.target.value)} style={{ borderColor: formErrors.phone ? 'var(--brand-danger)' : undefined }} />
-          {formErrors.phone && <p className="form-error">{formErrors.phone}</p>}
-        </div>
-        <div className="form-group col-span-2">
-          <label className="form-label">Email <span className="required">*</span></label>
-          <input className="form-control" type="email" placeholder="staff@milogistics.com" value={form.email} onChange={e => setF('email', e.target.value)} style={{ borderColor: formErrors.email ? 'var(--brand-danger)' : undefined }} />
-          {formErrors.email && <p className="form-error">{formErrors.email}</p>}
-        </div>
-        <div className="form-group">
-          <label className="form-label">Role</label>
-          <select className="form-control filter-select" value={form.role} onChange={e => setF('role', e.target.value)}>
-            {ROLES.map(r => <option key={r}>{r}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label className="form-label">Department</label>
-          <select className="form-control filter-select" value={form.department} onChange={e => setF('department', e.target.value)}>
-            {DEPTS.map(d => <option key={d}>{d}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label className="form-label">Monthly Salary (₹) <span className="required">*</span></label>
-          <input className="form-control" type="number" placeholder="25000" value={form.salary} onChange={e => setF('salary', e.target.value)} style={{ borderColor: formErrors.salary ? 'var(--brand-danger)' : undefined }} />
-          {formErrors.salary && <p className="form-error">{formErrors.salary}</p>}
-        </div>
-        <div className="form-group">
-          <label className="form-label">Status</label>
-          <select className="form-control filter-select" value={form.status} onChange={e => setF('status', e.target.value)}>
-            <option value="active">Active</option>
-            <option value="on-leave">On Leave</option>
-            <option value="inactive">Inactive</option>
-          </select>
-        </div>
-        <div className="form-group col-span-2">
-          <label className="form-label">Address</label>
-          <input className="form-control" placeholder="Virudhunagar" value={form.address} onChange={e => setF('address', e.target.value)} />
-        </div>
-      </div>
     </div>
   );
 
@@ -240,13 +242,13 @@ export default function Staff() {
       {/* Add Modal */}
       <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add Staff Member" size="modal-lg"
         footer={<><button className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button><button className="btn btn-primary" onClick={handleAdd}><FiPlus size={14} /> Add Staff</button></>}>
-        <StaffForm />
+        <StaffForm form={form} setF={setF} formErrors={formErrors} />
       </Modal>
 
       {/* Edit Modal */}
       <Modal open={!!showEdit} onClose={() => setShowEdit(null)} title="Edit Staff Member" size="modal-lg"
         footer={<><button className="btn btn-secondary" onClick={() => setShowEdit(null)}>Cancel</button><button className="btn btn-primary" onClick={handleEdit}>Save Changes</button></>}>
-        <StaffForm />
+        <StaffForm form={form} setF={setF} formErrors={formErrors} />
       </Modal>
 
       {/* View Modal */}
