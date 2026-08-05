@@ -102,19 +102,12 @@ export const AppProvider = ({ children }) => {
   // *names* (matching the original sample-data shape), but the API needs
   // `customerCode` / `staffCode`. Resolved here so the page component
   // doesn't need to know about the backend's id scheme.
-<<<<<<< HEAD
   // `customerCodeOverride` lets addShipment supply the code of a customer
   // it just auto-created (before that customer exists in `customers`
   // state yet), while update/edit keeps resolving by name as before.
   const resolveShipmentPayload = (data, customerCodeOverride) => {
     const customer = customers.find(c => c.name === data.customer);
     const staffMember = staff.find(s => s.name === data.staff);
-=======
-  const resolveShipmentPayload = (data) => {
-    const norm = (s) => (s || '').trim().toLowerCase();
-    const customer = customers.find(c => norm(c.name) === norm(data.customer));
-    const staffMember = staff.find(s => norm(s.name) === norm(data.staff));
->>>>>>> c6a602bbfa465cb979efa3f0b319ac627d4fd7c4
     return {
       customerCode: customerCodeOverride || customer?.id,
       staffCode: staffMember?.id,
@@ -137,7 +130,6 @@ export const AppProvider = ({ children }) => {
   // the user to go add the customer separately first.
   const addShipment = async (data) => {
     try {
-<<<<<<< HEAD
       let customer = customers.find(c => c.name === data.customer);
 
       if (!customer) {
@@ -153,21 +145,13 @@ export const AppProvider = ({ children }) => {
           toast.error(err.response?.data?.email?.[0] || err.response?.data?.name?.[0] || `Could not auto-create customer "${data.customer}".`);
           return;
         }
-=======
-      const payload = resolveShipmentPayload(data);
-      if (!payload.customerCode) {
-        toast.error(`No customer named "${data.customer}" found. Add them under Customers first.`);
-        return false;
->>>>>>> c6a602bbfa465cb979efa3f0b319ac627d4fd7c4
       }
 
       const payload = resolveShipmentPayload(data, customer.id);
       const { data: created } = await shipmentService.create(payload);
       setShipments(prev => [normalizeShipment(created), ...prev]);
-      return true;
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Could not create shipment.');
-      return false;
     }
   };
 
@@ -176,18 +160,11 @@ export const AppProvider = ({ children }) => {
     setShipments(prev => prev.map(s => s.id === id ? { ...s, ...data } : s));
     try {
       const payload = resolveShipmentPayload({ ...shipments.find(s => s.id === id), ...data });
-      if (!payload.customerCode) {
-        setShipments(previous);
-        toast.error(`No customer named "${data.customer}" found. Add them under Customers first.`);
-        return false;
-      }
       const { data: updated } = await shipmentService.update(id, payload);
       setShipments(prev => prev.map(s => s.id === id ? normalizeShipment(updated) : s));
-      return true;
     } catch (err) {
       setShipments(previous);
       toast.error('Could not update shipment.');
-      return false;
     }
   };
 

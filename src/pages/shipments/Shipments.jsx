@@ -10,7 +10,6 @@ const PRIORITIES = ['standard', 'express', 'economy'];
 
 const emptyForm = { customer: '', phone: '', origin: 'Virudhunagar', destination: '', weight: '', amount: '', status: 'pending', priority: 'standard', staff: '', address: '' };
 
-<<<<<<< HEAD
 function ShipmentForm({ form, setF, formErrors, staffList }) {
   return (
     <div>
@@ -70,65 +69,6 @@ function ShipmentForm({ form, setF, formErrors, staffList }) {
     </div>
   );
 }
-=======
-const ShipmentForm = ({ form, formErrors, setF, staffList }) => (
-  <div>
-    <div className="grid grid-2">
-      <div className="form-group">
-        <label className="form-label">Customer Name <span className="required">*</span></label>
-        <input className="form-control" placeholder="Enter customer name" value={form.customer} onChange={e => setF('customer', e.target.value)} style={{ borderColor: formErrors.customer ? 'var(--brand-danger)' : undefined }} />
-        {formErrors.customer && <p className="form-error">{formErrors.customer}</p>}
-      </div>
-      <div className="form-group">
-        <label className="form-label">Phone</label>
-        <input className="form-control" placeholder="+91 9876543210" value={form.phone} onChange={e => setF('phone', e.target.value)} />
-      </div>
-      <div className="form-group">
-        <label className="form-label">Origin</label>
-        <input className="form-control" value={form.origin} onChange={e => setF('origin', e.target.value)} />
-      </div>
-      <div className="form-group">
-        <label className="form-label">Destination <span className="required">*</span></label>
-        <input className="form-control" placeholder="City, State" value={form.destination} onChange={e => setF('destination', e.target.value)} style={{ borderColor: formErrors.destination ? 'var(--brand-danger)' : undefined }} />
-        {formErrors.destination && <p className="form-error">{formErrors.destination}</p>}
-      </div>
-      <div className="form-group">
-        <label className="form-label">Weight (kg) <span className="required">*</span></label>
-        <input className="form-control" type="number" placeholder="0.0" value={form.weight} onChange={e => setF('weight', e.target.value)} style={{ borderColor: formErrors.weight ? 'var(--brand-danger)' : undefined }} />
-        {formErrors.weight && <p className="form-error">{formErrors.weight}</p>}
-      </div>
-      <div className="form-group">
-        <label className="form-label">Amount (₹) <span className="required">*</span></label>
-        <input className="form-control" type="number" placeholder="0" value={form.amount} onChange={e => setF('amount', e.target.value)} style={{ borderColor: formErrors.amount ? 'var(--brand-danger)' : undefined }} />
-        {formErrors.amount && <p className="form-error">{formErrors.amount}</p>}
-      </div>
-      <div className="form-group">
-        <label className="form-label">Priority</label>
-        <select className="form-control filter-select" value={form.priority} onChange={e => setF('priority', e.target.value)}>
-          {PRIORITIES.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
-        </select>
-      </div>
-      <div className="form-group">
-        <label className="form-label">Status</label>
-        <select className="form-control filter-select" value={form.status} onChange={e => setF('status', e.target.value)}>
-          {STATUSES.filter(s => s !== 'All').map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-        </select>
-      </div>
-    </div>
-    <div className="form-group">
-      <label className="form-label">Delivery Address</label>
-      <input className="form-control" placeholder="Full delivery address" value={form.address} onChange={e => setF('address', e.target.value)} />
-    </div>
-    <div className="form-group">
-      <label className="form-label">Assigned Staff</label>
-      <select className="form-control filter-select" value={form.staff} onChange={e => setF('staff', e.target.value)}>
-        <option value="">Select staff member</option>
-        {staffList.map(st => <option key={st.id} value={st.name}>{st.name}</option>)}
-      </select>
-    </div>
-  </div>
-);
->>>>>>> c6a602bbfa465cb979efa3f0b319ac627d4fd7c4
 
 export default function Shipments() {
   const { shipments, addShipment, updateShipment, deleteShipment, customers, staff: staffList } = useApp();
@@ -162,36 +102,20 @@ export default function Shipments() {
     return e;
   };
 
-<<<<<<< HEAD
   const handleAdd = () => {
     const e = validateForm();
     if (Object.keys(e).length) { setFormErrors(e); return; }
     addShipment(form);
-=======
-  const handleAdd = async () => {
-    const e = validateForm();
-    if (Object.keys(e).length) { setFormErrors(e); return; }
-    const ok = await addShipment(form);
-    if (!ok) return;
->>>>>>> c6a602bbfa465cb979efa3f0b319ac627d4fd7c4
     toast.success('Shipment created successfully!');
     setShowAdd(false);
     setForm(emptyForm);
     setFormErrors({});
   };
 
-<<<<<<< HEAD
   const handleEdit = () => {
     const e = validateForm();
     if (Object.keys(e).length) { setFormErrors(e); return; }
     updateShipment(showEdit.id, form);
-=======
-  const handleEdit = async () => {
-    const e = validateForm();
-    if (Object.keys(e).length) { setFormErrors(e); return; }
-    const ok = await updateShipment(showEdit.id, form);
-    if (!ok) return;
->>>>>>> c6a602bbfa465cb979efa3f0b319ac627d4fd7c4
     toast.success('Shipment updated!');
     setShowEdit(null);
     setForm(emptyForm);
@@ -286,21 +210,13 @@ export default function Shipments() {
       {/* Add Modal */}
       <Modal open={showAdd} onClose={() => setShowAdd(false)} title="Add New Shipment" size="modal-lg"
         footer={<><button className="btn btn-secondary" onClick={() => setShowAdd(false)}>Cancel</button><button className="btn btn-primary" onClick={handleAdd}><FiPackage size={14} /> Create Shipment</button></>}>
-<<<<<<< HEAD
         <ShipmentForm form={form} setF={setF} formErrors={formErrors} staffList={staffList} />
-=======
-        <ShipmentForm form={form} formErrors={formErrors} setF={setF} staffList={staffList} />
->>>>>>> c6a602bbfa465cb979efa3f0b319ac627d4fd7c4
       </Modal>
 
       {/* Edit Modal */}
       <Modal open={!!showEdit} onClose={() => setShowEdit(null)} title="Edit Shipment" size="modal-lg"
         footer={<><button className="btn btn-secondary" onClick={() => setShowEdit(null)}>Cancel</button><button className="btn btn-primary" onClick={handleEdit}>Save Changes</button></>}>
-<<<<<<< HEAD
         <ShipmentForm form={form} setF={setF} formErrors={formErrors} staffList={staffList} />
-=======
-        <ShipmentForm form={form} formErrors={formErrors} setF={setF} staffList={staffList} />
->>>>>>> c6a602bbfa465cb979efa3f0b319ac627d4fd7c4
       </Modal>
 
       {/* View Modal */}
