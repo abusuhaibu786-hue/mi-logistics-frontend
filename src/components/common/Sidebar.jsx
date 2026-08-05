@@ -37,6 +37,7 @@ export default function Sidebar() {
   const collapsed = sidebarCollapsed;
 
   return (
+    <>
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''} ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
       {/* Logo */}
       <div className="sidebar-logo">
@@ -48,24 +49,6 @@ export default function Sidebar() {
           </div>
         )}
       </div>
-
-      {/* Collapse Toggle (desktop) */}
-      <button
-        onClick={() => setSidebarCollapsed(!collapsed)}
-        style={{
-          position: 'absolute', top: '20px', right: '-13px',
-          width: '26px', height: '26px',
-          background: 'var(--brand-accent)', border: 'none',
-          borderRadius: '50%', cursor: 'pointer',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#fff', zIndex: 10, transition: 'transform 0.3s',
-          transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-        }}
-        title={collapsed ? 'Expand' : 'Collapse'}
-      >
-        <FiChevronLeft size={14} />
-      </button>
 
       {/* Navigation */}
       <nav className="sidebar-nav">
@@ -103,5 +86,26 @@ export default function Sidebar() {
         </div>
       </div>
     </aside>
+
+    {/* Collapse Toggle (desktop) — sits outside the sidebar so its overflow:hidden doesn't clip it */}
+    <button
+      className="sidebar-collapse-toggle"
+      onClick={() => setSidebarCollapsed(!collapsed)}
+      style={{
+        position: 'fixed', top: '20px',
+        left: collapsed ? '57px' : '247px',
+        width: '26px', height: '26px',
+        background: 'var(--brand-accent)', border: 'none',
+        borderRadius: '50%', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        color: '#fff', zIndex: 1001, transition: 'left 0.3s, transform 0.3s',
+        transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+      }}
+      title={collapsed ? 'Expand' : 'Collapse'}
+    >
+      <FiChevronLeft size={14} />
+    </button>
+    </>
   );
 }
